@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  config.vm.box = 'digital_ocean'
+  config.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+  config.ssh.private_key_path = '~/.ssh/id_rsa'
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  #
+  config.vm.define "DropletFraVagrant", primary: true do |server|
+
+    server.vm.provider :digital_ocean do |provider|
+      provider.ssh_key_name = "NAVN PÅ SSH NØGLE PÅ DO"
+      provider.token = "TOKEN_FRA_DO"
+      provider.image = 'ubuntu-16-04-x64'
+      provider.region = 'fra1'
+      provider.size = '512mb'
+      provider.privatenetworking = true
+    end
+
+    server.vm.hostname = "DropletFraVagrant"
+    server.vm.provision "shell", inline: <<-SHELL
+	
+		sudo apt-get update
+		mkdir ~/.ssh
+		chmod 700 ~/.ssh
+		sudo echo "PRIVAT SSH NØGLE!"> ~/.ssh/authorized_keys
+		chmod 600 ~/.ssh/authorized_keys
+	  
+	  
+    SHELL
+  end
+  
+	
+end
